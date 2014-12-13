@@ -1,0 +1,37 @@
+# $Id$
+# Maintainer: Timothy Redaelli <timothy.redaelli@gmail.com>
+# Contributor: Florian Loitsch <archlinux@florian.loitsch.com>
+# Modified by Ting-Wei Lan <lantw44@gmail.com> to work on MSYS2
+
+_realname=miniupnpc
+pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
+pkgver=1.9.20141027
+pkgrel=1
+pkgdesc="A small UPnP client library/tool to access Internet Gateway Devices"
+arch=('any')
+url="http://miniupnp.free.fr"
+license=('BSD')
+depends=('sh')
+source=("http://miniupnp.free.fr/files/$_realname-$pkgver.tar.gz")
+sha256sums=('763a3ebed0c3267b8605247b38f46e99bfe54c96a9ca2882aa9abb5485407540')
+
+build() {
+  cp -r "$_realname-$pkgver" "$_realname-$pkgver-${MINGW_CHOST}"
+  cd "$_realname-$pkgver-${MINGW_CHOST}"
+  PATH="$PATH:`pwd`" make -f Makefile.mingw \
+    CC="${MINGW_CHOST}-gcc" init wingenminiupnpcstrings upnpc-static
+}
+
+package() {
+  cd "$_realname-$pkgver-${MINGW_CHOST}"
+  install -dm755 "${pkgdir}${MINGW_PREFIX}/include/${_realname}"
+  install -Dm644 \
+    miniupnpc.h miniwget.h upnpcommands.h igd_desc_parse.h \
+    upnpreplyparse.h upnperrors.h miniupnpctypes.h \
+    portlistingparse.h declspec.h bsdqueue.h \
+    "${pkgdir}${MINGW_PREFIX}/include/${_realname}"
+  install -Dm644 man3/miniupnpc.3 \
+    "${pkgdir}${MINGW_PREFIX}/share/man/man3/miniupnpc.3"
+  install -Dm644 LICENSE \
+    "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+}

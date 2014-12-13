@@ -1,0 +1,36 @@
+# $Id$
+# Maintainer: Stéphane Gaudreault <stephane@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Andreas Radke <andyrtr@archlinux.org>
+# Modified by Ting-Wei Lan <lantw44@gmail.com> to work on MSYS2
+
+_realname=db
+pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
+pkgver=5.3.28
+pkgrel=2
+pkgdesc="The Berkeley DB embedded database system"
+arch=('any')
+url="http://www.oracle.com/technology/software/products/berkeley-db/index.html"
+license=('custom')
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs" 'sh')
+source=(http://download.oracle.com/berkeley-db/db-${pkgver}.tar.gz)
+sha1sums=('fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9')
+
+build() {
+  mkdir -p "${srcdir}"/$_realname-${pkgver}/build_unix_${MINGW_CHOST}
+  cd "${srcdir}"/$_realname-${pkgver}/build_unix_${MINGW_CHOST}
+  ../dist/configure \
+    --host=${MINGW_CHOST} --build=${MINGW_CHOST} \
+    --prefix=${MINGW_PREFIX} --enable-mingw --disable-compat185 \
+    --enable-shared --enable-static --enable-cxx --enable-dbm \
+    --enable-stl
+  make
+}
+
+package() {
+  cd "${srcdir}"/$_realname-${pkgver}/build_unix_${MINGW_CHOST}
+  make DESTDIR="${pkgdir}" install
+  rm -r "${pkgdir}"${MINGW_PREFIX}/docs
+  install -Dm644 "${srcdir}"/${_realname}-${pkgver}/LICENSE \
+    "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE
+}

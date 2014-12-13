@@ -1,0 +1,38 @@
+# $Id$
+# Maintainer: Florian Pritz< flo@xinu.at>
+# Contributor: Dany Martineau <dany.luc.martineau@gmail.com>
+# Modified by Ting-Wei Lan <lantw44@gmail.com> to work on MSYS2
+
+_realname=qrencode
+pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
+pkgver=3.4.4
+pkgrel=1
+pkgdesc="C library for encoding data in a QR Code symbol."
+arch=('any')
+depends=("${MINGW_PACKAGE_PREFIX}-libpng")
+url="http://megaui.net/fukuchi/works/qrencode/index.en.html"
+license=('GPL')
+source=(http://megaui.net/fukuchi/works/${_realname}/${_realname}-${pkgver}.tar.bz2)
+md5sums=('62ba472bede0ad393cc63e0012b5f007')
+
+build() {
+  if [ '!' -d "${srcdir}/$_realname-$pkgver" ]; then
+    cd "${srcdir}"
+    bsdtar -xf "${_realname}-${pkgver}.tar.bz2"
+  fi
+
+  mkdir -p "${srcdir}/$_realname-${pkgver}-${MINGW_CHOST}"
+  cd "${srcdir}/$_realname-${pkgver}-${MINGW_CHOST}"
+
+
+  "${srcdir}/$_realname-$pkgver/configure" \
+    --host=${MINGW_CHOST} --build=${MINGW_CHOST} \
+    --prefix=${MINGW_PREFIX} --enable-static --enable-shared
+  make
+}
+
+package() {
+  cd "${srcdir}/$_realname-${pkgver}-${MINGW_CHOST}"
+
+  make DESTDIR="$pkgdir" install
+}
