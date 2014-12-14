@@ -1,0 +1,98 @@
+Building Bitcoin Core on Windows using MSYS2
+============================================
+
+Install MSYS2 on 64-bit Windows
+-------------------------------
+Please download the installer here: http://msys2.github.io/
+
+Open the "MSYS2 Shell" to start using it.
+
+[WARNING]
+You may need 20 GiB of free space to complete the build.
+
+
+Update the installed MSYS2 to the latest version
+------------------------------------------------
+Update essential packages. You must exit the shell after doing this.
+[source,sh]
+pacman -Sy
+pacman -S --needed filesystem msys2-runtime bash libreadline libiconv libarchive libgpgme libcurl pacman ncurses libintl
+
+Update remaining packages.
+[source,sh]
+pacman -Su
+
+
+Install MinGW toolchain and required libraries
+----------------------------------------------
+[source,sh]
+pacman -S make autoconf automake libtool pkg-config
+pacman -S mingw-w64-{i686,x86_64}-toolchain mingw-w64-{i686,x86_64}-pkgconf
+pacman -S mingw-w64-{i686,x86_64}-{boost,protobuf,libpng,qt5,qt5-static}
+
+
+Build and install packages provided by this repository
+------------------------------------------------------
+[source,sh]
+for i in mingw-w64-i686-*; do
+    pushd $i
+    makepkg-mingw
+    pacman -U mingw-w64-*
+    popd
+done
+
+
+Patch bitcoin_qt.m4
+-------------------
+Replace `-lqwindows` with `-lQt5PlatformSupport -lqwindows`.
+
+
+Building bitcoin (32-bit)
+-------------------------
+[source,sh]
+PATH=$PATH:/mingw32/bin
+./autogen.sh
+./configure \
+    --host=i686-w64-mingw32 \
+    --build=i686-w64-mingw32 \
+    --with-gui=qt5 \
+    --with-boost-libdir=/mingw32/lib \
+    --with-boost-system=boost_system-mt \
+    --with-boost-filesystem=boost_filesystem-mt \
+    --with-boost-program-options=boost_program_options-mt \
+    --with-boost-thread=boost_thread-mt \
+    --with-boost-chrono=boost_chrono-mt \
+    --with-boost-unit-test-framework=boost_unit_test_framework-mt \
+    --with-qt-incdir=/mingw32/qt5-static/include \
+    --with-qt-libdir=/mingw32/qt5-static/lib \
+    --with-qt-bindir=/mingw32/qt5-static/bin \
+    --with-qt-plugindir=/mingw32/qt5-static/share/qt5/plugins \
+    PKG_CONFIG=/mingw32/bin/pkg-config \
+    CPPFLAGS='-DMINIUPNP_STATICLIB' \
+    LDFLAGS='-Wl,--start-group -L/mingw32/qt5-static/lib -lharfbuzz -lopengl32 -lglib-2.0 -lintl -liconv -lminiupnpc'
+make
+
+Building bitcoin (64-bit)
+-------------------------
+[source,sh]
+PATH=$PATH:/mingw64/bin
+./autogen.sh
+./configure \
+    --host=x86_64-w64-mingw32 \
+    --build=x86_64-w64-mingw32 \
+    --with-gui=qt5 \
+    --with-boost-libdir=/mingw64/lib \
+    --with-boost-system=boost_system-mt \
+    --with-boost-filesystem=boost_filesystem-mt \
+    --with-boost-program-options=boost_program_options-mt \
+    --with-boost-thread=boost_thread-mt \
+    --with-boost-chrono=boost_chrono-mt \
+    --with-boost-unit-test-framework=boost_unit_test_framework-mt \
+    --with-qt-incdir=/mingw64/qt5-static/include \
+    --with-qt-libdir=/mingw64/qt5-static/lib \
+    --with-qt-bindir=/mingw64/qt5-static/bin \
+    --with-qt-plugindir=/mingw64/qt5-static/share/qt5/plugins \
+    PKG_CONFIG=/mingw64/bin/pkg-config \
+    CPPFLAGS='-DMINIUPNP_STATICLIB' \
+    LDFLAGS='-Wl,--start-group -L/mingw64/qt5-static/lib -lharfbuzz -lopengl32 -lglib-2.0 -lintl -liconv -lminiupnpc'
+make
