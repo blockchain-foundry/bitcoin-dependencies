@@ -18,8 +18,10 @@ sha256sums=('763a3ebed0c3267b8605247b38f46e99bfe54c96a9ca2882aa9abb5485407540')
 build() {
   cp -r "$_realname-$pkgver" "$_realname-$pkgver-${MINGW_CHOST}"
   cd "$_realname-$pkgver-${MINGW_CHOST}"
-  PATH="$PATH:`pwd`" make -f Makefile.mingw \
-    CC="${MINGW_CHOST}-gcc" init wingenminiupnpcstrings upnpc-static
+  export CC="${MINGW_CHOST}-gcc"
+  PATH="$PATH:`pwd`" make -f Makefile.mingw  CC="${CC}" \
+    init wingenminiupnpcstrings upnpc-static
+  make -f Makefile.mingw CC="${CC}"
 }
 
 package() {
@@ -30,6 +32,10 @@ package() {
     upnpreplyparse.h upnperrors.h miniupnpctypes.h \
     portlistingparse.h declspec.h bsdqueue.h \
     "${pkgdir}${MINGW_PREFIX}/include/${_realname}"
+  install -dm755 "${pkgdir}${MINGW_PREFIX}/lib"
+  install -Dm644 libminiupnpc.a "${pkgdir}${MINGW_PREFIX}/lib"
+  install -dm755 "${pkgdir}${MINGW_PREFIX}/bin"
+  install -Dm644 miniupnpc.dll "${pkgdir}${MINGW_PREFIX}/bin"
   install -Dm644 man3/miniupnpc.3 \
     "${pkgdir}${MINGW_PREFIX}/share/man/man3/miniupnpc.3"
   install -Dm644 LICENSE \
