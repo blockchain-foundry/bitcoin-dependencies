@@ -5,7 +5,7 @@
 # Modified by Ting-Wei Lan <lantw44@gmail.com> to work on MSYS2
 
 _realname=db
-pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
+pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}5
 pkgver=5.3.28
 pkgrel=2
 pkgdesc="The Berkeley DB embedded database system"
