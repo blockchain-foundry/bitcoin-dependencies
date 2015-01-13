@@ -5,7 +5,7 @@
 
 _realname=miniupnpc
 pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
-pkgver=1.9.20141027
+pkgver=1.9.20141128
 pkgrel=1
 pkgdesc="A small UPnP client library/tool to access Internet Gateway Devices"
 arch=('any')
@@ -13,7 +13,7 @@ url="http://miniupnp.free.fr"
 license=('BSD')
 depends=('sh')
 source=("http://miniupnp.free.fr/files/$_realname-$pkgver.tar.gz")
-sha256sums=('763a3ebed0c3267b8605247b38f46e99bfe54c96a9ca2882aa9abb5485407540')
+sha256sums=('754419d9fec75deefa2c630a90eaf156bb008db5dbcdb662377715b7c1662e26')
 
 build() {
   cp -r "$_realname-$pkgver" "$_realname-$pkgver-${MINGW_CHOST}"
@@ -30,7 +30,7 @@ package() {
   install -Dm644 \
     miniupnpc.h miniwget.h upnpcommands.h igd_desc_parse.h \
     upnpreplyparse.h upnperrors.h miniupnpctypes.h \
-    portlistingparse.h declspec.h bsdqueue.h \
+    portlistingparse.h declspec.h \
     "${pkgdir}${MINGW_PREFIX}/include/${_realname}"
   install -dm755 "${pkgdir}${MINGW_PREFIX}/lib"
   install -Dm644 libminiupnpc.a "${pkgdir}${MINGW_PREFIX}/lib"
